@@ -10,7 +10,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.Queue;
+import java.util.PriorityQueue;
 /**
  * Implementation of a Map using a binary search tree.
  * 
@@ -73,6 +74,17 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		
 		// the actual search
         // TODO: Fill this in.
+        Node next = root;
+        do{
+        int cmp = k.compareTo(next.key);
+        if(cmp == 0)
+        	return next;
+        if(cmp < 0)
+        	next = next.left;
+        else
+        	next = next.right;
+		} while(next!=null);
+
         return null;
 	}
 
@@ -92,7 +104,24 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	@Override
 	public boolean containsValue(Object target) {
-		return false;
+		 Queue<Node> q = new LinkedList<Node>();
+		 q.add(root);
+		 while (!q.isEmpty()){
+		 	Node next = q.remove();
+		 	if (equals(next.value,target))
+		 		return true;
+		 	else{
+		 		Node left = next.left;
+		 		Node right = next.right;
+		 		if(left!=null)
+		 			q.add(left);
+		 		if(right!=null)
+		 			q.add(right);
+		 	}
+		 }
+
+		 return false;
+			
 	}
 
 	@Override
@@ -118,7 +147,16 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 	public Set<K> keySet() {
 		Set<K> set = new LinkedHashSet<K>();
         // TODO: Fill this in.
+		inOrderTraversal(set,root);
 		return set;
+	}
+
+	private void inOrderTraversal(Set<K> set, Node n){
+		if(n.left != null)
+			inOrderTraversal(set,n.left);
+		set.add(n.key);
+		if(n.right != null)
+			inOrderTraversal(set,n.right);
 	}
 
 	@Override
@@ -136,6 +174,33 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	private V putHelper(Node node, K key, V value) {
         // TODO: Fill this in.
+        Node next = null;
+        Comparable<? super K> k = (Comparable<? super K>) key;
+
+        if(node==root)
+        	next = findNode(k);
+
+        if(next!=null){
+        	V old = next.value;
+        	next.value=value;
+        	return old;
+        }
+        int comp = k.compareTo(node.key);
+        if(comp>0)
+        	if(node.right!=null)
+        		return putHelper(node.right,key,value);
+        	else
+        	{	node.right = new Node(key,value);
+        		size++;
+        	}
+        if(comp<0)
+        	if(node.left!=null)
+        		return putHelper(node.left,key,value);
+        	else
+        	{	node.left = new Node(key,value);
+        		size++;
+        	}
+
         return null;
 	}
 
