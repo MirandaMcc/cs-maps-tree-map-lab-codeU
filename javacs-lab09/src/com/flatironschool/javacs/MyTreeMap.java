@@ -44,6 +44,7 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 			this.key = key;
 			this.value = value;
 		}
+
 	}
 		
 	@Override
@@ -213,7 +214,60 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	@Override
 	public V remove(Object key) {
-		throw new UnsupportedOperationException();
+		V v = null; //key not in tree
+		v = delete(root,null,(K )key,false);
+
+		return v;
+	}
+
+	private V delete(Node n, Node parent, K key, boolean isleft){
+		Comparable<? super K> k = (Comparable<? super K>) key;
+
+		int comp = k.compareTo(n.key);
+		if (comp < 0)
+			return delete(n.left,n,key,true);
+		if (comp > 0)
+			return delete(n.right,n,key,false);
+
+		V val = n.value;
+		//Case 1 - n is a leaf
+		if(n.right == null && n.left == null)
+		{
+			if (isleft)
+				parent.left = null;
+			else
+				parent.right = null;
+		}
+
+		//Case 2 - only 1 child
+		if(n.right == null)
+		{
+			if (isleft)
+				parent.left = n.left;
+			else
+				parent.right = n.left;
+		}
+		else
+		{
+			if (isleft)
+				parent.left = n.right;
+			else
+				parent.right = n.right;
+		}
+
+		//Case 3 - 2 kids - replace with next largest
+		Node successor =  localMin(n);
+		n.key = successor.key;
+		delete(root,null,n.key,false);
+
+		return val;
+	}
+
+	//Finds and returns minimum node in subtree by traversing left as far as possible
+	private Node localMin(Node n){
+		if(n.left != null)
+			localMin(n.left);
+		return n;
 	}
 
 	@Override

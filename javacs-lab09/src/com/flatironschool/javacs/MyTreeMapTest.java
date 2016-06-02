@@ -17,7 +17,7 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-
+import org.junit.Assert;
 /**
  * @author downey
  *
@@ -169,7 +169,20 @@ public class MyTreeMapTest {
 	 */
 	@Test
 	public void testRemove() {
-		// nothing to test, since this method is not implemented
+		// set up map
+		map.put("06", 66);
+		assertThat(map.size(), is(9));
+		assertThat(map.get("06"), is(66));
+		
+		map.put("05", 5);
+		assertThat(map.size(), is(10));
+		assertThat(map.get("05"), is(5));
+
+		map.remove("05");
+		assertThat(map.size(), is(9));
+		assertThat(map.get("06"), is(66));
+		boolean gone = map.get("05") == null;
+		assertThat(gone,is(true));
 	}
 
 	/**
